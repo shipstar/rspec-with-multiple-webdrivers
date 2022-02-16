@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "CupriteHome", type: :system do
+describe "SeleniumHome", type: :feature, driver: :selenium_headless do
   it "loads the home page" do
     puts page.driver.class
 

@@ -63,11 +63,34 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
 
-  config.before(:each, type: :system, driver: :selenium) do
+  config.before(type: :system) do
+    driven_by :cuprite, using: :chromium, screen_size: [1400, 1400]
+  end
+
+  config.before(type: :system, driver: :selenium) do
     driven_by :selenium_headless, using: :chromium, screen_size: [1400, 1400]
   end
 
-  config.before(:each, type: :system) do
-    driven_by :cuprite, using: :chromium, screen_size: [1400, 1400]
+  Capybara.register_driver(:cuprite) do |app|
+    Capybara::Cuprite::Driver.new(app, browser: :chrome)
+  end
+
+  Capybara.register_driver(:selenium_headless) do |app|
+    capabilities = Selenium::WebDriver::Remote::Capabilities.chrome("goog:loggingPrefs" => {browser: "ALL"})
+    browser_options = Selenium::WebDriver::Chrome::Options.new(args: ["--headless"])
+
+    Capybara::Selenium::Driver.new(app, browser: :chrome, capabilities: [capabilities, browser_options])
+  end
+
+  config.before(type: :feature) do
+    Capybara.current_driver = :cuprite
+  end
+  
+  config.before(type: :feature, driver: :selenium_headless) do
+    Capybara.current_driver = :selenium_headless
+  end
+
+  config.after(type: :feature) do
+    Capybara.use_default_driver
   end
 end

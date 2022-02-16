@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "CupriteHome", type: :system do
+describe "CupriteHome", type: :feature do
   it "loads the home page" do
     puts page.driver.class
 
